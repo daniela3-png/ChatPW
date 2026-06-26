@@ -65,6 +65,20 @@ body {
     border-radius: 4px;
 }
 
+/* Posicionamiento flotante del selector de emojis */
+.chat-footer {
+    position: relative; 
+}
+
+#emoji-picker-container {
+    position: absolute;
+    bottom: 60px;
+    left: 10px;
+    z-index: 1000;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+    border-radius: 10px;
+}
+
 /* Burbujas de chat */
 .message-bubble {
     padding: 10px 14px;

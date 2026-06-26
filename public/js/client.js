@@ -8,6 +8,9 @@ const messageForm = document.getElementById('message-form');
 const messagesDisplay = document.getElementById('chat-messages');
 const searchInput = document.getElementById('search-input');
 const fileInput = document.getElementById('file-input');
+const emojiBtn = document.getElementById('emoji-btn');
+const emojiContainer = document.getElementById('emoji-picker-container');
+const textInput = document.getElementById('msg-text');
 
 let currentUser = '';
 let currentRoom = '';
@@ -59,11 +62,29 @@ messageForm.addEventListener('submit', (e) => {
     textInput.value = '';
 });
 
-// Ataque rápido para Emojis (Req 6 - Funcionalidad básica interactiva)
-document.getElementById('emoji-btn').addEventListener('click', () => {
-    const textInput = document.getElementById('msg-text');
-    textInput.value += '🚀'; // Añade un emoji rápido al cuadro de texto
-    textInput.focus();
+// Inicializar el selector de Emoji Mart (Requerimiento 6)
+const pickerOptions = { 
+    locale: 'es',
+    onEmojiSelect: (emoji) => {
+        textInput.value += emoji.native;
+        textInput.focus();
+        emojiContainer.classList.add('hidden');
+    } 
+};
+const picker = new EmojiMart.Picker(pickerOptions);
+emojiContainer.appendChild(picker);
+
+// Mostrar / Ocultar la ventana de emojis al hacer clic en el botón
+emojiBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Evita que el evento cierre la ventana inmediatamente
+    emojiContainer.classList.toggle('hidden');
+});
+
+// Cerrar la ventana de emojis si el usuario hace clic en cualquier otra parte del chat
+document.addEventListener('click', (e) => {
+    if (!emojiContainer.contains(e.target) && e.target !== emojiBtn) {
+        emojiContainer.classList.add('hidden');
+    }
 });
 
 // Recibir mensajes del servidor (Req 2, 3 y 6)
