@@ -160,3 +160,31 @@ function loadMockHistoricalMessages() {
     }
     messageHistory.forEach(msg => renderMessage(msg));
 }
+
+// Elemento del DOM para Cerrar Sesión
+const logoutBtn = document.getElementById('logout-btn');
+
+// Lógica de Desconexión / Salida de la Sala
+logoutBtn.addEventListener('click', () => {
+    const confirmar = confirm('¿Estás seguro de que deseas salir del chat y abandonar la sala?');
+    
+    if (confirmar) {
+        // 1. Forzar la desconexión del socket (gatilla el 'disconnect' en el servidor)
+        socket.disconnect();
+
+        // 2. Limpiar el historial en memoria del cliente (Req 8)
+        messageHistory = [];
+
+        // 3. Limpiar la interfaz gráfica
+        messagesDisplay.innerHTML = '';
+        searchInput.value = '';
+        document.getElementById('msg-text').value = '';
+
+        // 4. Alternar pantallas: ocultar chat y mostrar login
+        chatContainer.classList.add('hidden');
+        authContainer.classList.remove('hidden');
+
+        // 5. Volver a conectar el socket para dejarlo listo para un próximo inicio de sesión
+        socket.connect();
+    }
+});

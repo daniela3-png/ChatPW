@@ -111,3 +111,42 @@ body {
     border: none;
 }
 .file-download { color: #007bff; text-decoration: none; font-size: 0.9em; font-weight: bold; }
+
+/* Contenedor de controles en el encabezado */
+.header-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Estilo del botón Cerrar Sesión */
+#logout-btn {
+    background-color: #dc3545; /* Rojo de alerta/salida */
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+#logout-btn:hover {
+    background-color: #bd2130;
+}
+
+/* Ajuste responsivo para el encabezado en pantallas pequeñas */
+@media (max-width: 480px) {
+    .chat-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    .header-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+    #search-input {
+        flex-grow: 1;
+    }
+}

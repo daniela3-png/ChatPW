@@ -37,30 +37,21 @@
         <div id="chat-container" class="card hidden">
             <header class="chat-header">
                 <h3 id="current-room-title">Sala: </h3>
-                <!-- Requerimiento 8: Buscador en el historial local -->
-                <input type="text" id="search-input" placeholder="🔍 Buscar en el historial...">
+                <div class="header-controls">
+                    <input type="text" id="search-input" placeholder="Buscar en el historial...">
+                    <button type="button" id="logout-btn" title="Cerrar Sesión">🚪 Salir</button>
+                </div>
             </header>
 
-            <!-- Contenedor del historial de mensajes (Soporta Req 9: Scroll Infinito) -->
-            <div id="chat-messages" class="messages-display">
-                <!-- Los mensajes y notificaciones se inyectan dinámicamente mediante JS -->
-            </div>
+            <div id="chat-messages" class="messages-display"></div>
 
             <footer class="chat-footer">
-                <!-- Ventana emergente donde JS renderizará el panel de emojis (Req 6) -->
                 <div id="emoji-picker-container" class="hidden"></div>
-
-                <!-- Formulario de Entrada de Mensajes y Adjuntos (Req 6) -->
                 <form id="message-form">
-                    <!-- Botón para alternar la ventana de emojis -->
                     <button type="button" id="emoji-btn">😀</button>
-                    
                     <input type="text" id="msg-text" placeholder="Escribe tu mensaje aquí..." autocomplete="off">
-                    
-                    <!-- Botón personalizado para adjuntar archivos (Req 6) -->
                     <label for="file-input" class="file-label">📎</label>
                     <input type="file" id="file-input" style="display:none;">
-                    
                     <button type="submit">Enviar</button>
                 </form>
             </footer>
