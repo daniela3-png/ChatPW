@@ -18,6 +18,16 @@ io.on('connection', (socket) => {
 
     // Requerimiento 4 & 5: Autenticación básica y unirse a salas temáticas
     socket.on('joinRoom', ({ username, room }) => {
+        // Si el usuario ya estaba en una sala, salir de ella primero
+        if (socket.room && socket.room !== room) {
+            socket.leave(socket.room);
+            // Notificar a la sala anterior
+            socket.to(socket.room).emit('notification', {
+                text: `${socket.username || username} ha salido de la sala.`
+            });
+            console.log(`Usuario ${username} cambió de sala: ${socket.room} -> ${room}`);
+        }
+
         socket.join(room);
         
         // Requerimiento 7: Notificación cuando alguien se une

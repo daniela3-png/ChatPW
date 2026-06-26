@@ -1,62 +1,188 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Avanzado - Programación Web</title>
+    <meta name="description"
+        content="PW Chat - Una aplicación de chat en tiempo real con salas temáticas, transferencia de archivos, emojis y búsqueda de historial.">
+    <title> Chat - Act. Practica </title>
+
+    <!-- Tipografía Moderna Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="css/styles.css">
-    
-    <!-- 1. Biblioteca para el selector de emojis(Emoji Mart) -->
+
+    <!-- 1. Biblioteca para el selector de emojis (Emoji Mart) -->
     <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
-    
+
     <!-- 2. Carga de la librería cliente de Socket.IO -->
     <script src="/socket.io/socket.io.js" defer></script>
-    
+
     <!-- 3. Archivo JavaScript del cliente -->
     <script src="js/client.js" defer></script>
 </head>
+
 <body>
+    <!-- Encabezado SEO invisible o accesible por lectores de pantalla -->
+    <h1 class="sr-only"> Chat - Act. Practica</h1>
+
     <div class="app-container">
-        
-        <!-- Pantalla de Login / Autenticación Básica y Selección de Sala (Req 4 y 5) -->
-        <div id="auth-container" class="card">
-            <h2>Acceso al Chat</h2>
+
+        <!-- PANTALLA DE ACCESO (Login y Selección Inicial) -->
+        <main id="auth-container" class="glass-card login-card">
+            <div class="login-header">
+                <h2>Bienvenido al Chat</h2>
+                <p>Ingresa tu nombre y selecciona tu sala de inicio</p>
+            </div>
+
             <form id="login-form">
-                <input type="text" id="username" placeholder="Ingresa tu nombre de usuario" required>
-                    <select id="room-select">
-                        <option value="Taberna del Dragón (General)"> Taberna del Dragón (General)</option>
-                        <option value="Sala de Rol D&D">⚔️ Sala: Pathfinder</option>
-                        <option value="Mesa de Estrategia"> Mesa de Estrategia</option>
-                        <option value="Creación de Personajes"> Creación de Personajes</option>
-                    </select>
-                <button type="submit">Ingresar</button>
-            </form>
-        </div>
-
-        <!-- Interfaz Principal del Chat (Se quita la clase hidden tras el ingreso) -->
-        <div id="chat-container" class="card hidden">
-            <header class="chat-header">
-                <h3 id="current-room-title">Sala: </h3>
-                <div class="header-controls">
-                    <input type="text" id="search-input" placeholder="Buscar en el historial...">
-                    <button type="button" id="logout-btn" title="Cerrar Sesión">🚪 Salir</button>
+                <div class="input-group">
+                    <label for="username">Nombre de Usuario</label>
+                    <input type="text" id="username" placeholder="Ej. Monkey D. Luffy" required maxlength="15"
+                        autocomplete="off">
                 </div>
-            </header>
 
-            <div id="chat-messages" class="messages-display"></div>
+                <div class="input-group">
+                    <label for="room-select">Seleccionar Sala</label>
+                    <select id="room-select">
+                        <option value="Taberna del Dragón (General)">🍺 Taberna del Dragón (General)</option>
+                        <option value="Sala de Rol D&D">⚔️ Sala: Pathfinder</option>
+                        <option value="Mesa de Estrategia">🧠 Mesa de Estrategia</option>
+                        <option value="Creación de Personajes">🎨 Creación de Personajes</option>
+                    </select>
+                </div>
 
-            <footer class="chat-footer">
-                <div id="emoji-picker-container" class="hidden"></div>
-                <form id="message-form">
-                    <button type="button" id="emoji-btn">😀</button>
-                    <input type="text" id="msg-text" placeholder="Escribe tu mensaje aquí..." autocomplete="off">
-                    <label for="file-input" class="file-label">📎</label>
-                    <input type="file" id="file-input" style="display:none;">
-                    <button type="submit">Enviar</button>
-                </form>
-            </footer>
+                <button type="submit" class="btn-primary" id="btn-login-submit">Entrar al Chat</button>
+            </form>
+        </main>
+
+        <!-- INTERFAZ PRINCIPAL DE CHAT (Inicialmente oculta) -->
+        <div id="chat-container" class="glass-card chat-wrapper hidden">
+
+            <!-- PANEL LATERAL: SALAS Y PERFIL -->
+            <aside class="chat-sidebar" id="sidebar-menu">
+                <div class="sidebar-header">
+                    <div class="logo-text"><span>Chat</span></div>
+                </div>
+
+                <div class="user-profile-section">
+                    <div class="user-avatar" id="user-profile-avatar">U</div>
+                    <div class="user-info">
+                        <span class="user-name" id="user-profile-name">Cargando...</span>
+                        <span class="user-status"><span class="status-dot"></span> En línea</span>
+                    </div>
+                </div>
+
+                <nav class="rooms-nav">
+                    <h4>Salas Disponibles</h4>
+                    <ul class="rooms-list" id="rooms-list-container">
+                        <li class="room-item active" data-room="Taberna del Dragón (General)">
+                            <span class="room-icon">🍺</span>
+                            <span class="room-name">Taberna del Dragón (General)</span>
+                        </li>
+                        <li class="room-item" data-room="Sala de Rol D&D">
+                            <span class="room-icon">⚔️</span>
+                            <span class="room-name">Sala: Pathfinder</span>
+                        </li>
+                        <li class="room-item" data-room="Mesa de Estrategia">
+                            <span class="room-icon">🧠</span>
+                            <span class="room-name">Mesa de Estrategia</span>
+                        </li>
+                        <li class="room-item" data-room="Creación de Personajes">
+                            <span class="room-icon">🎨</span>
+                            <span class="room-name">Creación de Personajes</span>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <button type="button" id="logout-btn" class="btn-logout">
+                        <span class="btn-icon">🚪</span> Salir del Chat
+                    </button>
+                </div>
+            </aside>
+
+            <!-- PANEL PRINCIPAL DE CONVERSACIÓN -->
+            <main class="chat-main">
+
+                <!-- Cabecera de la Conversación -->
+                <header class="chat-header">
+                    <div class="room-info-display">
+                        <h3 id="current-room-title">Sala: Taberna del Dragón</h3>
+                        <p class="room-desc" id="current-room-desc">Canal de conversación general y de bienvenida.</p>
+                    </div>
+
+                    <div class="header-controls">
+                        <!-- Barra de Búsqueda -->
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="search-input" placeholder="Buscar mensajes..." autocomplete="off">
+                            <button type="button" id="clear-search-btn" class="clear-search hidden">✕</button>
+                        </div>
+
+                        <!-- Toggle de Mute para Alertas -->
+                        <button type="button" id="mute-btn" class="btn-icon-toggle" title="Silenciar notificaciones">
+                            <span id="mute-icon">🔊</span>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Caja de Mensajes -->
+                <div id="chat-messages" class="messages-display">
+                    <!-- Mensajes cargados dinámicamente -->
+                </div>
+
+                <!-- Previsualizador de archivos seleccionados -->
+                <div id="file-preview-container" class="file-preview-bar hidden">
+                    <div class="file-preview-info">
+                        <span class="file-preview-icon">📎</span>
+                        <span id="file-preview-name" class="file-preview-name">archivo.pdf</span>
+                        <span id="file-preview-size" class="file-preview-size">(45 KB)</span>
+                    </div>
+                    <button type="button" id="cancel-file-btn" class="btn-cancel-file" title="Quitar archivo">✕</button>
+                </div>
+
+                <!-- Pie de página con el formulario de envío -->
+                <footer class="chat-footer">
+                    <!-- Contenedor del Emoji Picker de Emoji Mart -->
+                    <div id="emoji-picker-container" class="hidden"></div>
+
+                    <form id="message-form" class="message-form-container">
+                        <!-- Botón Emojis -->
+                        <button type="button" id="emoji-btn" class="form-btn" title="Insertar Emoji">😀</button>
+
+                        <!-- Input de Mensaje -->
+                        <input type="text" id="msg-text" placeholder="Escribe un mensaje aquí..." autocomplete="off"
+                            maxlength="500">
+
+                        <!-- Botón Adjuntar Archivo -->
+                        <label for="file-input" class="form-btn file-label" title="Adjuntar Archivo">
+                            📎
+                        </label>
+                        <input type="file" id="file-input" style="display:none;">
+
+                        <!-- Botón Enviar -->
+                        <button type="submit" id="send-btn" class="btn-send">
+                            <span>Enviar</span>
+                            <span class="send-arrow">➔</span>
+                        </button>
+                    </form>
+                </footer>
+            </main>
+
         </div>
 
     </div>
+
+    <!-- MODAL LIGHTBOX PARA IMÁGENES -->
+    <div id="lightbox-modal" class="lightbox hidden" aria-hidden="true" role="dialog">
+        <button type="button" class="close-lightbox" id="close-lightbox-btn" aria-label="Cerrar imagen">✕</button>
+        <img class="lightbox-content" id="lightbox-img" alt="Vista ampliada">
+        <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
 </body>
+
 </html>
