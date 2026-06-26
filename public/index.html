@@ -1,0 +1,80 @@
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
+const path = require("path");
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+const PORT = 3000;
+
+const usuarios = {};
+
+app.use(express.static(path.join(__dirname, "public")));
+
+io.on("connection", (socket) => {
+    console.log("Usuario conectado:", socket.id);
+
+    socket.on("unirseSala", (datos) => {
+        socket.usuario = datos.usuario;
+        socket.sala = datos.sala;
+
+        socket.join(datos.sala);
+
+        if (!usuarios[datos.sala]) {
+            usuarios[datos.sala] = [];
+        }
+
+        usuarios[datos.sala].push(datos.usuario);
+
+        io.to(datos.sala).emit("mensajeSistema", `${datos.usuario} se unió a la sala.`);
+        io.to(datos.sala).emit("usuariosSala", usuarios[datos.sala]);
+    });
+
+    socket.on("mensajeChat", (datos) => {
+        io.to(datos.sala).emit("mensajeChat", datos);
+    });
+
+    socket.on("cambiarSala", (datos) => {
+        socket.leave(datos.salaAnterior);
+
+        if (usuarios[datos.salaAnterior]) {
+            usuarios[datos.salaAnterior] = usuarios[datos.salaAnterior].filter(
+                usuario => usuario !== datos.usuario
+            );
+
+            io.to(datos.salaAnterior).emit("usuariosSala", usuarios[datos.salaAnterior]);
+            io.to(datos.salaAnterior).emit("mensajeSistema", `${datos.usuario} salió de la sala.`);
+        }
+
+        socket.join(datos.salaNueva);
+        socket.sala = datos.salaNueva;
+
+        if (!usuarios[datos.salaNueva]) {
+            usuarios[datos.salaNueva] = [];
+        }
+
+        usuarios[datos.salaNueva].push(datos.usuario);
+
+        io.to(datos.salaNueva).emit("mensajeSistema", `${datos.usuario} se unió a la sala.`);
+        io.to(datos.salaNueva).emit("usuariosSala", usuarios[datos.salaNueva]);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Usuario desconectado:", socket.id);
+
+        if (socket.usuario && socket.sala && usuarios[socket.sala]) {
+            usuarios[socket.sala] = usuarios[socket.sala].filter(
+                usuario => usuario !== socket.usuario
+            );
+
+            io.to(socket.sala).emit("mensajeSistema", `${socket.usuario} abandonó la sala.`);
+            io.to(socket.sala).emit("usuariosSala", usuarios[socket.sala]);
+        }
+    });
+});
+
+server.listen(PORT, () => {
+    console.log(`Servidor iniciado en http://localhost:${PORT}`);
+});
