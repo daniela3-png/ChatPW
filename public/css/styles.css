@@ -1,0 +1,99 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.hidden { display: none !important; }
+
+/* Login */
+#login-form input, #login-form select, #login-form button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+#login-form button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* Caja de Chat */
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+#search-input {
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+.messages-display {
+    height: 350px;
+    overflow-y: auto;
+    border: 1px solid #f7f7f7;
+    background: #fafafa;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+}
+
+/* Burbujas de chat */
+.message-bubble {
+    padding: 10px 14px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    max-width: 75%;
+    word-wrap: break-word;
+}
+.message-bubble p { margin: 4px 0 0 0; }
+.my-message { background: #d9fdd3; align-self: flex-end; margin-left: auto; }
+.other-message { background: #ffffff; border: 1px solid #e1e1e1; }
+.system-notification { text-align: center; color: #777; font-size: 0.85em; margin: 8px 0; width: 100%; }
+
+/* Formulario inferior */
+.chat-footer form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+#msg-text {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+.file-label, #emoji-btn {
+    font-size: 1.3em;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+.file-download { color: #007bff; text-decoration: none; font-size: 0.9em; font-weight: bold; }

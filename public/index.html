@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Avanzado - Programación Web</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script src="js/client.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <div id="auth-container" class="card">
+            <h2>Acceso al Chat</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Ingresa tu nombre de usuario" required>
+                <select id="room-select">
+                    <option value="Tecnología">Sala: Tecnología</option>
+                    <option value="Diseño UI">Sala: Diseño UI</option>
+                    <option value="Programación">Sala: Programación</option>
+                </select>
+                <button type="submit">Ingresar</button>
+            </form>
+        </div>
+
+        <div id="chat-container" class="card hidden">
+            <header class="chat-header">
+                <h3 id="current-room-title">Sala: </h3>
+                <input type="text" id="search-input" placeholder="🔍 Buscar en el historial...">
+            </header>
+
+            <div id="chat-messages" class="messages-display">
+                </div>
+
+            <footer class="chat-footer">
+                <form id="message-form">
+                    <button type="button" id="emoji-btn">😀</button>
+                    <input type="text" id="msg-text" placeholder="Escribe tu mensaje aquí..." autocomplete="off">
+                    <label for="file-input" class="file-label">📎</label>
+                    <input type="file" id="file-input" style="display:none;">
+                    <button type="submit">Enviar</button>
+                </form>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
